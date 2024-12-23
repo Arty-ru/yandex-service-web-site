@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <title>Upload</title>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/view">Просмотреть DICOM</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/">Загрузить DICOM</a>
+            </li>
+            {% if request.user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/nifti">Просмотреть NIFTI</a>
+                </li>
+                {% endif %}
+            {% if request.user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/nifti/neuronet">Просмотреть нейросети</a>
+                </li>
+                {% endif %}
+        </ul>
+        {% if request.user.is_authenticated %}
+        <h3 class="navbar-brand">{{request.user}}</h3>
+        <a class="navbar-brand" href="{% url 'logout' %}">Выйти</a>
+        {% endif %}
+    </div>
+  </nav><br><br>
+    <div class="container">
+    <form method="post" action="/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <select class="form-select" name="select-type" aria-label="Default select example" >
+          <label>Болезнь</label>
+            <option value="1">Анневризм</option>
+            <option value="2">Стенозис</option>
+          </select>
+          <br>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" name="screens" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Вводите данные в виде: I10, I150, ... (для выбора файлов номер 1, 15, ...)">
+          </div>
+          <div class="mb-3">
+            <select class="form-select" name="seelect-type" aria-label="Default select example" >
+              <label>Болезнь</label>
+                <option value="1">Анневризм</option>
+                <option value="2">Стенозис</option>
+              </select>
+              <br>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" name="screeens" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Вводите данные в виде: I10, I150, ... (для выбора файлов номер 1, 15, ...)">
+              </div>
+              <div class="mb-3">
+            <label for="formFileMultiple" class="form-label">Выберите папку для загрузки</label>
+            <input class="form-control" type="file" id="file_input" name="file_field" webkitdirectory directory>
+          </div>
+          <input type="text" id="directories" name="directories" hidden />
+          <input type="text" id="folder" name="folder" hidden />
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3">Отправить</button>
+          </div>
+      </form>
+      <script>
+        files = document.querySelector("#file_input").files;
+        document.querySelector("#file_input").addEventListener("change", function() {
+           files = document.querySelector("#file_input").files;
+           var folder_path = files[0].webkitRelativePath
+           var folder = folder_path.split("/")
+           document.querySelector("#folder").value = folder
+           var directories = {}
+           for (var file of files) {
+             file.webkitRelativePath
+             directories[file.name] = file.webkitRelativePath
+           }
+           directories = JSON.stringify(directories);
+           document.querySelector("#directories").value = directories
+        });
+       </script>
+    </div>
+</body>
+</html>  
